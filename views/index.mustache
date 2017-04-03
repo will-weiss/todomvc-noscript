@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TodoMVC</title>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+  <link href="main.css" rel="stylesheet">
+  <link href="todos.css" rel="stylesheet">
+  <link href="override.css" rel="stylesheet">
+  <style>
+
+    .hide {
+      display: none !important;
+    }
+
+    .modal > div {
+      background: wheat;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+          -ms-flex-align: center;
+              align-items: center;
+      -webkit-box-pack: center;
+          -ms-flex-pack: center;
+              justify-content: center;
+      height: 120px;
+      padding: 1em;
+      position: relative;
+      width: 50%;
+    }
+
+    .modal:target {
+      opacity: 1;
+      visibility: visible;
+      z-index: 99999 !important;
+    }
+
+    body {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+          -ms-flex-align: center;
+              align-items: center;
+      -webkit-box-pack: center;
+          -ms-flex-pack: center;
+              justify-content: center;
+      min-height: 100vh;
+    }
+
+    a.modalBtn {
+      -webkit-box-flex: 1;
+          -ms-flex: 1;
+              flex: 1;
+      background-color: #c69;
+      border: none;
+      padding: 1.5em;
+      max-width: 30%;
+      color: white;
+      -webkit-transition-duration: .25s;
+              transition-duration: .25s;
+      text-align: center;
+      text-decoration: none;
+      font-size: 1.25em;
+    }
+    a.modalBtn:hover, a.modalBtn:focus {
+      background-color: #993366;
+    }
+
+    .close {
+      background-color: transparent;
+      position: absolute;
+      top: .2em;
+      right: .5em;
+      font-size: 1.5em;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .close:hover, .close:focus {
+      color: #c69;
+    }
+
+    .todoapp {
+      width: 100% !important;
+    }
+
+    .todo-list li a {
+      word-break: break-all;
+      padding: 15px 60px 15px 15px;
+      margin-left: 45px;
+      display: block;
+      line-height: 1.2;
+      transition: color 0.4s;
+    }
+
+    a.btn {
+      text-decoration: none;
+    }
+
+    .btn {
+      display: block;
+      padding: 1em 2em;
+      background: transparent;
+      color: #000;
+      border: 1px solid #fff;
+      outline: 0;
+      cursor: pointer;
+      -webkit-transition: 0.3s ease;
+      transition: 0.3s ease;
+      -webkit-appearance: none;
+    }
+    .btn:hover {
+      background: #fff;
+      color: #da513d;
+    }
+    .modal {
+      opacity: 0;
+      visibility: hidden;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+          -ms-flex-align: center;
+              align-items: center;
+      -webkit-box-pack: center;
+          -ms-flex-pack: center;
+              justify-content: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      -webkit-transition: 0.3s ease-in-out;
+      transition: 0.3s ease-in-out;
+    }
+    .modal__box {
+      padding: 1em;
+      background: #fff;
+      box-shadow: 0 0 10px 0 rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    /* modal magic */
+    .btn:focus + .modal {
+      opacity: 1;
+      visibility: visible;
+    }
+
+  </style>
+</head>
+<body>
+  {{#visibleTodos}}
+    <dialog class="modal" id="edit-todo-{{id}}" tabindex="-1" role="dialog">
+      <div class="modal__box">
+        <a class="close" href="#" aria-label="Close">&times;</a>
+        <form action="/edit-todo" method="post">
+          <input type="text" class="hide" name="id" value="{{id}}">
+          <input type="text" class="edit" name="newText" value="{{text}}" maxlength="50" pattern="[A-Za-z]{1,50}" required>
+          <input type="submit" class="hide"/>
+        </form>
+      </div>
+    </dialog>
+  {{/visibleTodos}}
+  <div class="todoapp">
+    <header class="header">
+      <h1>todos</h1>
+      <form class="new-todo" action="/new-todo" method="post">
+        <input type="text" class="new-todo" placeholder="What needs to be done?" name="text" maxlength="50" pattern="[A-Za-z]{1,50}" required autofocus>
+      </form>
+    </header>
+    <section class="main{{^anyTodos}} hide{{/anyTodos}}">
+      <form class="toggle-all" action="/toggle-all" method="post">
+        <label for="toggle-all">Mark all as complete</label>
+        <button class="toggle-all" id="toggle-all" type="submit"></button>
+      </form>
+      <ul class="todo-list">
+        {{#visibleTodos}}
+          <li {{#complete}}class="completed"{{/complete}}>
+            <div class="view">
+              <form class="toggle-todo" action="/toggle-todo" method="post">
+                <input type="text" class="hide" name="id" value="{{id}}">
+                <input type="submit" class="toggle" value="{{#complete}}✓{{/complete}}{{^complete}}○{{/complete}}">
+              </form>
+              <a class="btn begin-edit" id="begin-edit-{{id}}" href="#edit-todo-{{id}}">
+                {{text}}
+              </a>
+              <form class="delete-todo" action="/delete-todo" method="post">
+                <input class="hide" name="id" value="{{id}}">
+                <button class="destroy" type="submit"></button>
+              </form>
+            </div>
+          </li>
+        {{/visibleTodos}}
+      </ul>
+    </section>
+    <footer class="footer{{^anyTodos}} hide{{/anyTodos}}">
+      <span class="todo-count">
+        <strong>{{itemsLeft}}</strong> item{{^oneLeft}}s{{/oneLeft}} left</span>
+      <ul class="filters">
+        <li>
+          <a id="all-link" href="/" style="cursor: pointer;" {{#showingAll}}class="selected"{{/showingAll}}>
+            All
+          </a>
+        </li>
+        <li>
+          <a id="active-link" href="/active" style="cursor: pointer;" {{#showingActive}}class="selected"{{/showingActive}}>
+            Active
+          </a>
+        </li>
+        <li>
+          <a id="completed-link" href="/completed" style="cursor: pointer;" {{#showingCompleted}}class="selected"{{/showingCompleted}}>
+            Completed
+          </a>
+        </li>
+      </ul>
+      <form action="/clear-completed" method="post" {{^anyComplete}}class="hide"{{/anyComplete}}>
+        <button class="clear-completed" type="submit">Clear completed</button>
+      </form>
+    </footer>
+  </div>
+</body>
+<script defer>
+  console.log("This is not my beautiful house!")
+  console.log("This is not my beautiful wife!")
+</script>
+</html>

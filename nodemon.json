@@ -1,0 +1,14 @@
+{
+  "restartable": "rs",
+  "verbose": true,
+  "watch": [
+    "compiled/",
+    "views/",
+    "public/"
+  ],
+  "ignore": [
+    "*.js.map",
+    "*.spec.js"
+  ],
+  "ext": "html js json ts tsx mustache"
+}

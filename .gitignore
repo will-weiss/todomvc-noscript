@@ -1,3 +1,15 @@
+.vscode/
+.idea/
+node_modules/
+npm-debug.log
+tmp/
+compiled/
+sessions/
+events/
+projections/
+coverage/
+html-report/
+
 # Logs
 logs
 *.log
